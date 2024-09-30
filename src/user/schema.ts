@@ -8,6 +8,6 @@ export const users = mysqlTable("users", {
     name: varchar("name", { length: 256 }).notNull(),
     email: varchar("email", { length: 256 }).notNull().unique(),
     password: varchar("password", { length: 256 }).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
