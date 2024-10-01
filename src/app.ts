@@ -1,13 +1,33 @@
-import express from 'express';
-const app = express();
+import express from "express";
+import http from "http";
+import cookieParser from "cookie-parser";
+import compression from "compression";
+import cors from "cors";
+import router from "./router";
+
 require('dotenv').config()
 
-const port = process.env.PORT || 3000;
+const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello Wosrld!');
-});
 
-app.listen(port, () => {
-    return console.log(`Express is listenin at http://localhost:${port}`);
+
+const port = process.env.PORT || 8000
+
+app.use(cors({
+    credentials: true
+}));
+
+app.use(compression());
+
+app.use(cookieParser());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, }));
+
+const server = http.createServer(app);
+
+app.use("/", router())
+
+server.listen(port, () => {
+    console.log(`server running on http://localhost:${port}/`);
 });

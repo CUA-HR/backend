@@ -1,30 +1,109 @@
-import { logs, logsRelations, roles, userRelations, users } from "user/schema";
-import { teachers, teachersRelations } from "teacher/schema";
-import { positions } from "position/schema";
-import { durations } from "duration/schema";
-import { tiers, tiersRelations } from "tier/schema";
+import { relations } from "drizzle-orm";
+import { bigint, mysqlTable, timestamp, varchar, text, mysqlEnum, int, date, boolean } from "drizzle-orm/mysql-core";
+
+
+/// USER SCHEMA
+export const users = mysqlTable("users", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    email: varchar("email", { length: 256 }).notNull().unique(),
+    password: varchar("password", { length: 256 }).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+
+    roleId: bigint("roleId", { mode: "number", unsigned: true }).notNull().references(() => roles.id),
+});
+
+export const logs = mysqlTable("logs", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    details: text("details"),
+
+    userId: bigint("userId", { mode: "number", unsigned: true }).notNull().references(() => users.id),
+})
+
+export const roles = mysqlTable("roles", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+})
+
+export const userRelations = relations(users, ({ one }) => ({
+    role: one(roles, { fields: [users.roleId], references: [roles.id] }),
+}))
+
+export const logsRelations = relations(logs, ({ one }) => ({
+    user: one(users, { fields: [logs.userId], references: [users.id] }),
+}))
+
+
+/// TEACHER SCHEMA
+export const teachers = mysqlTable("teachers", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    firstname: varchar("firstname", { length: 256 }).notNull(),
+    lastname: varchar("lastname", { length: 256 }).notNull(),
+    email: varchar("email", { length: 256 }).notNull().unique(),
+    dob: date("dob", { mode: "date" }).notNull(),
+    matrialStatus: mysqlEnum('matrialStatus', ['متزوج', 'أعزب']).notNull(),
+    age: int("age"),
+    currentDegree: mysqlEnum("currentDegree", ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
+    nextDegree: mysqlEnum("nextDegree", ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
+    effectiveDate: date("effectiveDate", { mode: "date" }).notNull(),
+    highPostion: boolean("highPostion").notNull().$default(() => false),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+
+    tierId: bigint("tierId", { mode: "number", unsigned: true }).notNull().references(() => tiers.id),
+    postionId: bigint("postionId", { mode: "number", unsigned: true }).notNull().references(() => positions.id),
+});
+
+export const teachersRelations = relations(teachers, ({ one }) => ({
+    tier: one(tiers, { fields: [teachers.tierId], references: [tiers.id] }),
+    postion: one(positions, { fields: [teachers.postionId], references: [positions.id] })
+}))
+
+
+/// TIER SCHEMA
+export const tiers = mysqlTable("tiers", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+
+    durationId: bigint("durationId", { mode: "number", unsigned: true }).notNull().references(() => durations.id),
+});
 
 
 
-module.exports = {
-    // users
-    users,
-    userRelations,
-    logs,
-    logsRelations,
-    roles,
+export const tiersRelations = relations(tiers, ({ one }) => ({
+    duration: one(durations, { fields: [tiers.durationId], references: [durations.id] })
+}))
 
-    // teachers
-    teachers,
-    teachersRelations,
+/// DURATION SCHEMA
+export const durations = mysqlTable("durations", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    duration: varchar("duration", { length: 256 }).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
 
-    // postions
-    positions,
 
-    // tiers
-    tiers,
-    tiersRelations,
-
-    // durations
-    durations,
-}
+/// POSTION SCHEMA
+export const positions = mysqlTable("positions", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
