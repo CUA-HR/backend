@@ -1,4 +1,7 @@
+import { relations } from "drizzle-orm";
 import { bigint, mysqlTable, timestamp, varchar, date, mysqlEnum, int, boolean } from "drizzle-orm/mysql-core";
+import { positions } from "position/schema";
+import { tiers } from "tier/schema";
 
 
 export const teachers = mysqlTable("teachers", {
@@ -17,4 +20,12 @@ export const teachers = mysqlTable("teachers", {
     highPostion: boolean("highPostion").notNull().$default(() => false),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+
+    tierId: bigint("tierId", { mode: "number", unsigned: true }).notNull().references(() => tiers.id),
+    postionId: bigint("postionId", { mode: "number", unsigned: true }).notNull().references(() => positions.id),
 });
+
+export const teachersRelations = relations(teachers, ({ one }) => ({
+    tier: one(tiers, { fields: [teachers.tierId], references: [tiers.id] }),
+    postion: one(positions, { fields: [teachers.postionId], references: [positions.id] })
+}))
