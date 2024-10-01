@@ -1,5 +1,6 @@
 import { teachers } from 'db/schema';
 import { db } from 'db/setup';
+import { eq } from 'drizzle-orm';
 
 
 /// GET ALL TEACHERS
@@ -24,7 +25,7 @@ export const updateTeacher = async (): Promise<any[]> => {
 
 
 /// DELETE ONE TEACHER
-export const deleteTeacher = async (): Promise<any[]> => {
-    return await db.select().from(teachers);
+export const deleteTeacher = async (id: number): Promise<any[]> => {
+    return await db.delete(teachers).where(eq(teachers.id, id));
 }
 
