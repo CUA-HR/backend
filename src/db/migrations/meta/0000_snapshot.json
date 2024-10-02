@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "58c19b19-6fcf-4fb9-9e8b-96d1efb530d7",
+  "id": "0148246c-070b-47d3-aeb1-6a52f018e425",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "durations": {
@@ -231,34 +231,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "currentDegree": {
-          "name": "currentDegree",
-          "type": "enum('0','1','2','3','4','5','6','7','8','9','12')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nextDegree": {
-          "name": "nextDegree",
-          "type": "enum('0','1','2','3','4','5','6','7','8','9','12')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "effectiveDate": {
-          "name": "effectiveDate",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "highPostion": {
-          "name": "highPostion",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -336,6 +308,95 @@
           ]
         }
       }
+    },
+    "teachersHistory": {
+      "name": "teachersHistory",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "currentDegree": {
+          "name": "currentDegree",
+          "type": "enum('0','1','2','3','4','5','6','7','8','9','12')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nextDegree": {
+          "name": "nextDegree",
+          "type": "enum('0','1','2','3','4','5','6','7','8','9','12')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "effectiveDate": {
+          "name": "effectiveDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "highPostion": {
+          "name": "highPostion",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        },
+        "teacherId": {
+          "name": "teacherId",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teachersHistory_teacherId_teachers_id_fk": {
+          "name": "teachersHistory_teacherId_teachers_id_fk",
+          "tableFrom": "teachersHistory",
+          "tableTo": "teachers",
+          "columnsFrom": [
+            "teacherId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "teachersHistory_id": {
+          "name": "teachersHistory_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
     },
     "tiers": {
       "name": "tiers",
