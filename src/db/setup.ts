@@ -1,10 +1,17 @@
 import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2";
-import * as schema from './schema';
+import mysql from "mysql2/promise";
 
-if (!process.env.DATABASE_URL) {
-    throw new Error("DB credentials error");
-}
-const connection = mysql.createConnection(process.env.DATABASE_URL);
+const initializeDatabase = async () => {
+    const connection = await mysql.createConnection({
+        host: process.env.HOST, // replace with your host
+        user: "root", // replace with your username
+        password: "root", // replace with your password
+        database: "CUAHR", // replace with your database name
+    });
+    return drizzle(connection);
+};
 
-export const db = drizzle(connection, { schema: schema, mode: "default" });
+// Immediately initialize the database
+const db = initializeDatabase();
+
+export { db };
