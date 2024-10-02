@@ -3,7 +3,7 @@ import http from "http";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
-import router from "./router";
+import router from "./routes";
 
 require('dotenv').config()
 
