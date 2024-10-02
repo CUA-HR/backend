@@ -1,7 +1,7 @@
 import { db } from '../../db/setup';
 import { teachers } from '../../db/schema';
 import { eq } from 'drizzle-orm';
-import { CreateTeacherDTO } from 'teacher/dtos';
+import { CreateTeacherDTO, UpdateTeacherDTO } from 'teacher/dtos';
 
 // CREATE ONE TEACHER
 export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<CreateTeacherDTO> => {
@@ -20,14 +20,14 @@ export const allTeachers = async (): Promise<any[]> => {
 }
 
 /// GET ONE TEACHER
-export const teacher = async (): Promise<any[]> => {
-    return (await db).select().from(teachers);
+export const teacher = async (id: number): Promise<any[]> => {
+    return (await db).select().from(teachers).where(eq(teachers.id, id));
 }
 
 
 /// UPDATE ONE TEACHER
-export const updateTeacher = async (): Promise<any[]> => {
-    return (await db).select().from(teachers);
+export const updateTeacher = async (updateTeacherDTO: UpdateTeacherDTO): Promise<any[]> => {
+    return (await db).update(teachers).set(updateTeacherDTO).where(eq(teachers.id, updateTeacherDTO.id)).execute();
 }
 
 

@@ -1,9 +1,12 @@
 import express from "express";
-import { CreateTeacher } from "../teacher/controller/teacher.controller";
+import { AllTeachers, CreateTeacher, DeleteTeacher, Teacher, UpdateTeacher } from "../teacher/controller/teacher.controller";
 
 
 
 export default (router: express.Router) => {
-    // router.get("/teacher/all", AllTeachers);
     router.post("/teacher/create", CreateTeacher);
+    router.get("/teacher/:id", Teacher);
+    router.get("/teacher/all", AllTeachers);
+    router.put("/teacher/update", UpdateTeacher);
+    router.delete("/teacher/delete/:id", DeleteTeacher);
 }
