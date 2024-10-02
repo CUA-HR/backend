@@ -59,8 +59,8 @@ export const teachers = mysqlTable("teachers", {
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
-    tierId: bigint("tierId", { mode: "number", unsigned: true }).notNull().references(() => tiers.id),
-    positionId: bigint("positionId", { mode: "number", unsigned: true }).notNull().references(() => positions.id),
+    tierId: bigint("tierId", { mode: "number", unsigned: true }).notNull().references(() => tiers.id, { onDelete: "cascade" }),
+    positionId: bigint("positionId", { mode: "number", unsigned: true }).notNull().references(() => positions.id, { onDelete: "cascade" }),
 });
 
 export const teachersRelations = relations(teachers, ({ one }) => ({
@@ -78,7 +78,7 @@ export const tiers = mysqlTable("tiers", {
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
-    durationId: bigint("durationId", { mode: "number", unsigned: true }).notNull().references(() => durations.id),
+    durationId: bigint("durationId", { mode: "number", unsigned: true }).notNull().references(() => durations.id, { onDelete: "cascade" }),
 });
 
 

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1727775159891,
-      "tag": "0000_familiar_wildside",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1727857179691,
-      "tag": "0001_loose_forgotten_one",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1727862229441,
-      "tag": "0002_wise_moira_mactaggert",
+      "when": 1727865601280,
+      "tag": "0000_black_madelyne_pryor",
       "breakpoints": true
     }
   ]

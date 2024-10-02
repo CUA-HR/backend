@@ -33,6 +33,6 @@ export const updateTeacher = async (updateTeacherDTO: UpdateTeacherDTO): Promise
 
 /// DELETE ONE TEACHER
 export const deleteTeacher = async (id: number): Promise<any[]> => {
-    return (await db).delete(teachers).where(eq(teachers.id, id));
+    return (await db).delete(teachers).where(eq(teachers.id, id)).execute();
 }
 
