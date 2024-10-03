@@ -3,7 +3,7 @@ import { tiers } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { CreateTierDTO, UpdateTierDTO } from '../dtos';
 
-// CREATE ONE Position
+// CREATE ONE Tier
 export const createTier = async (createTier: CreateTierDTO): Promise<CreateTierDTO> => {
     try {
 
@@ -14,24 +14,24 @@ export const createTier = async (createTier: CreateTierDTO): Promise<CreateTierD
     }
 };
 
-/// GET ALL PositionS
+/// GET ALL Tiers
 export const allTiers = async (): Promise<any[]> => {
     return (await db).select().from(tiers);
 }
 
-/// GET ONE Position
+/// GET ONE Tier
 export const tier = async (id: number): Promise<any[]> => {
     return (await db).select().from(tiers).where(eq(tiers.id, id));
 }
 
 
-/// UPDATE ONE Position
+/// UPDATE ONE Tier
 export const updateTier = async (updateTierDTO: UpdateTierDTO): Promise<any[]> => {
     return (await db).update(tiers).set(updateTierDTO).where(eq(tiers.id, updateTierDTO.id)).execute();
 }
 
 
-/// DELETE ONE Position
+/// DELETE ONE Tier
 export const deleteTier = async (id: number): Promise<any[]> => {
     return (await db).delete(tiers).where(eq(tiers.id, id)).execute();
 }

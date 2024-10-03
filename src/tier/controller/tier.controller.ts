@@ -21,6 +21,7 @@ export const CreateTier = async (req: express.Request, res: express.Response): P
 }
 
 export const AllTiers = async (req: express.Request, res: express.Response): Promise<any> => {
+
     try {
         const resutl = await allTiers();
         return res.status(200).json(resutl)
@@ -67,6 +68,7 @@ export const UpdateTier = async (req: express.Request, res: express.Response): P
 
 export const DeleteTier = async (req: express.Request, res: express.Response): Promise<any> => {
     const { id } = req.params;
+    console.log(id)
     try {
         const resutl = await deleteTier(Number(id));
         return res.status(200).json(resutl)

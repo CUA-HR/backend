@@ -7,8 +7,8 @@ const router = express.Router();
 
 export default (): express.Router => {
     teacher(router);
-    position(router);
     teacherHistory(router);
+    position(router);
     tier(router);
     return router
 }

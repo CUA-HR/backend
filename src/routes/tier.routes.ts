@@ -5,8 +5,8 @@ import { AllTiers, CreateTier, DeleteTier, Tier, UpdateTier } from "../tier/cont
 
 export default (router: express.Router) => {
     router.post("/tier/create", CreateTier);
-    router.get("/tier/:id", Tier);
     router.get("/tier/all", AllTiers);
+    router.get("/tier/:id", Tier);
     router.put("/tier/update", UpdateTier);
     router.delete("/tier/delete/:id", DeleteTier);
 }

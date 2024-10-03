@@ -5,8 +5,8 @@ import { AllTeachers, CreateTeacher, DeleteTeacher, Teacher, UpdateTeacher } fro
 
 export default (router: express.Router) => {
     router.post("/teacher/create", CreateTeacher);
-    router.get("/teacher/:id", Teacher);
     router.get("/teacher/all", AllTeachers);
+    router.get("/teacher/:id", Teacher);
     router.put("/teacher/update", UpdateTeacher);
     router.delete("/teacher/delete/:id", DeleteTeacher);
 }
