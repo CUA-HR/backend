@@ -2,6 +2,8 @@ import { db } from '../../db/setup';
 import { teachers, teachersHistory } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { CreateTeacherDTO, UpdateTeacherDTO } from 'teacher/dtos';
+import { createTeacherHistory } from 'teacherHistory/repository/teacherHistory.repository';
+import { CreateTeacherHistoryDTO } from 'teacherHistory/dtos';
 
 // CREATE ONE TEACHER
 export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<CreateTeacherDTO> => {
@@ -16,16 +18,13 @@ export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<Cr
                 positionId: createTeacher.positionId,
                 tierId: createTeacher.tierId,
             }).execute();
-            await tx.insert(teachersHistory).values({
-                currentDegree: createTeacher.currentDegree,
-                nextDegree: createTeacher.nextDegree,
-                effectiveDate: createTeacher.effectiveDate,
-                teacherId: result[0].insertId
-            })
+            const { currentDegree, nextDegree, effectiveDate } = createTeacher;
+            const teacherId = result[0].insertId
+            const createTeacherHistoryDTO = new CreateTeacherHistoryDTO(teacherId, currentDegree, nextDegree, effectiveDate)
+            await createTeacherHistory(createTeacherHistoryDTO);
         })
         return createTeacher; // Assuming `insertId` is returned
     } catch (error) {
-        console.error('Error creating teacher:', error);
         throw new Error('Failed to create teacher'); // Handle errors appropriately
     }
 };
