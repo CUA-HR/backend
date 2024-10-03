@@ -1,7 +1,7 @@
 import express from "express";
 import { handleError } from "../../utils/errors";
-import { CreateTeacherHistoryDTO, UpdateTeacherHistoryDTO } from "teacherHistory/dtos";
-import { allTeachersHistories, createTeacherHistory, deleteTeacherHistory, teacherHistories, teacherHistory, updateTeacherHistory } from "teacherHistory/repository/teacherHistory.repository";
+import { CreateTeacherHistoryDTO, UpdateTeacherHistoryDTO } from "../dtos";
+import { allTeachersHistories, createTeacherHistory, deleteTeacherHistory, teacherHistories, teacherHistory, updateTeacherHistory } from "../repository/teacherHistory.repository";
 
 export const CreateTeacherHistory = async (req: express.Request, res: express.Response): Promise<CreateTeacherHistoryDTO | any> => {
     try {

@@ -16,7 +16,7 @@ export const createTeacherHistory = async (createTeacherHistory: CreateTeacherHi
 
 /// GET ALL TEACHERS History
 export const allTeachersHistories = async (): Promise<any[]> => {
-    return (await db).select().from(teachersHistory).groupBy(teachersHistory.teacherId).execute();
+    return (await db).select().from(teachersHistory).execute();
 }
 
 
@@ -39,6 +39,6 @@ export const updateTeacherHistory = async (updateTeacherHistoryDTO: UpdateTeache
 
 /// DELETE ONE TEACHER History
 export const deleteTeacherHistory = async (id: number, teacherId: number): Promise<any[]> => {
-    return (await db).delete(teachers).where(and(eq(teachersHistory.id, id), eq(teachersHistory.teacherId, teacherId))).execute();
+    return (await db).delete(teachersHistory).where(and(eq(teachersHistory.id, id), eq(teachersHistory.teacherId, teacherId))).execute();
 }
 
