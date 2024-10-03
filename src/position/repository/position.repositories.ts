@@ -9,7 +9,6 @@ export const createPosition = async (createPosition: CreatePositionDTO): Promise
         const result = await (await db).insert(positions).values({ ...createPosition }).execute();
         return createPosition; // Assuming `insertId` is returned
     } catch (error) {
-        console.error('Error creating Position:', error);
         throw new Error('Failed to create Position'); // Handle errors appropriately
     }
 };
