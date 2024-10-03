@@ -1,15 +1,15 @@
-import { CreateDurationDTO, UpdateDurationDTO } from "duration/dtos";
-import { allDurations, createDuration, deleteDuration, duration, updateDuration } from "../repository/duration.repository";
 import express from "express";
-import { handleError } from "utils/errors";
+import { CreateDurationDTO, UpdateDurationDTO } from "../dtos";
+import { allDurations, createDuration, deleteDuration, duration, updateDuration } from "../repository/duration.repository";
+import { handleError } from "../../utils/errors";
 
 export const CreateDuration = async (req: express.Request, res: express.Response): Promise<CreateDurationDTO | any> => {
     try {
         const {
-            name
+            duration
         } = req.body;
         // Create an instance of UserDTO
-        const createDurationDTO = new CreateDurationDTO(name);
+        const createDurationDTO = new CreateDurationDTO(duration);
         const resutl = await createDuration(createDurationDTO);
         return res.status(200).json(resutl)
     } catch (error) {
@@ -46,12 +46,12 @@ export const UpdateDuration = async (req: express.Request, res: express.Response
     try {
         const {
             id,
-            name,
+            duration,
         } = req.body;
         // Create an instance of UserDTO
         const updateDurationDTO = new UpdateDurationDTO(
             id,
-            name,
+            duration,
         );
         const resutl = await updateDuration(updateDurationDTO);
         return res.status(200).json(resutl)

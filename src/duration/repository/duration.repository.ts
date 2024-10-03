@@ -1,4 +1,4 @@
-import { durations } from "db/schema";
+import { durations } from "../../db/schema";
 import { db } from "../../db/setup";
 import { CreateDurationDTO, UpdateDurationDTO } from "duration/dtos";
 import { eq } from "drizzle-orm";
