@@ -52,15 +52,12 @@ export const teachers = mysqlTable("teachers", {
     dob: date("dob", { mode: "date" }).notNull(),
     matrialStatus: mysqlEnum('matrialStatus', ['متزوج', 'أعزب']).notNull(),
     age: int("age"),
-    currentDegree: mysqlEnum("currentDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
-    nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
-    effectiveDate: date("effectiveDate", { mode: "date" }).notNull(),
     highPostion: boolean("highPostion").notNull().$default(() => false),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
-    tierId: bigint("tierId", { mode: "number", unsigned: true }).notNull().references(() => tiers.id),
-    positionId: bigint("positionId", { mode: "number", unsigned: true }).notNull().references(() => positions.id),
+    tierId: bigint("tierId", { mode: "number", unsigned: true }).notNull().references(() => tiers.id, { onDelete: "cascade" }),
+    positionId: bigint("positionId", { mode: "number", unsigned: true }).notNull().references(() => positions.id, { onDelete: "cascade" }),
 });
 
 export const teachersRelations = relations(teachers, ({ one }) => ({
@@ -68,6 +65,26 @@ export const teachersRelations = relations(teachers, ({ one }) => ({
     postion: one(positions, { fields: [teachers.positionId], references: [positions.id] })
 }))
 
+export const teachersHistory = mysqlTable("teachersHistory", {
+    id: bigint("id", { mode: "number", unsigned: true })
+        .autoincrement()
+        .primaryKey(),
+    currentDegree: mysqlEnum("currentDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
+    nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
+    effectiveDate: date("effectiveDate", { mode: "date" }).notNull(),
+    highPostion: boolean("highPostion").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+
+    teacherId: bigint("teacherId", { mode: "number", unsigned: true }).notNull().references(() => teachers.id, { onDelete: "cascade" }),
+})
+
+export const teachersHistoryRealtions = relations(teachersHistory, ({ one }) => ({
+    teacher: one(teachers, {
+        fields: [teachersHistory.teacherId],
+        references: [teachers.id]
+    },)
+}))
 
 /// TIER SCHEMA
 export const tiers = mysqlTable("tiers", {
@@ -78,7 +95,7 @@ export const tiers = mysqlTable("tiers", {
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
-    durationId: bigint("durationId", { mode: "number", unsigned: true }).notNull().references(() => durations.id),
+    durationId: bigint("durationId", { mode: "number", unsigned: true }).notNull().references(() => durations.id, { onDelete: "cascade" }),
 });
 
 

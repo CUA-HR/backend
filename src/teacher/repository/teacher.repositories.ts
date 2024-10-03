@@ -2,14 +2,29 @@ import { db } from '../../db/setup';
 import { teachers } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { CreateTeacherDTO, UpdateTeacherDTO } from 'teacher/dtos';
+import { createTeacherHistory } from '../../teacherHistory/repository/teacherHistory.repository';
+import { CreateTeacherHistoryDTO } from '../../teacherHistory/dtos';
 
 // CREATE ONE TEACHER
 export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<CreateTeacherDTO> => {
     try {
-        const result = await (await db).insert(teachers).values({ ...createTeacher }).execute();
+        await (await db).transaction(async (tx) => {
+            const result = await (await db).insert(teachers).values({
+                firstname: createTeacher.firstname,
+                lastname: createTeacher.lastname,
+                email: createTeacher.email,
+                dob: createTeacher.dob,
+                matrialStatus: createTeacher.matrialStatus,
+                positionId: createTeacher.positionId,
+                tierId: createTeacher.tierId,
+            }).execute();
+            const { currentDegree, nextDegree, effectiveDate } = createTeacher;
+            const teacherId = result[0].insertId
+            const createTeacherHistoryDTO = new CreateTeacherHistoryDTO(teacherId, currentDegree, nextDegree, effectiveDate)
+            await createTeacherHistory(createTeacherHistoryDTO);
+        })
         return createTeacher; // Assuming `insertId` is returned
     } catch (error) {
-        console.error('Error creating teacher:', error);
         throw new Error('Failed to create teacher'); // Handle errors appropriately
     }
 };
@@ -33,6 +48,6 @@ export const updateTeacher = async (updateTeacherDTO: UpdateTeacherDTO): Promise
 
 /// DELETE ONE TEACHER
 export const deleteTeacher = async (id: number): Promise<any[]> => {
-    return (await db).delete(teachers).where(eq(teachers.id, id));
+    return (await db).delete(teachers).where(eq(teachers.id, id)).execute();
 }
 

@@ -1,9 +1,10 @@
 import express from "express";
-import teacherRoutes from "./teacher.routes";
-
+import teacher from "./teacher.routes";
+import position from "./position.routes"
 const router = express.Router();
 
 export default (): express.Router => {
-    teacherRoutes(router);
+    teacher(router);
+    position(router);
     return router
 }
