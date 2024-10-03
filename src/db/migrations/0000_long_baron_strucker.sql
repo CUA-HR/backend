@@ -35,6 +35,7 @@ CREATE TABLE `teachers` (
 	`dob` date NOT NULL,
 	`matrialStatus` enum('متزوج','أعزب') NOT NULL,
 	`age` int,
+	`highPostion` boolean NOT NULL,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`tierId` bigint unsigned NOT NULL,

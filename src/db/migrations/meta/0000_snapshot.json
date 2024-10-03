@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "0148246c-070b-47d3-aeb1-6a52f018e425",
+  "id": "ee94a75b-590d-44da-ae27-fb20414af821",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "durations": {
@@ -229,6 +229,13 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "highPostion": {
+          "name": "highPostion",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "createdAt": {

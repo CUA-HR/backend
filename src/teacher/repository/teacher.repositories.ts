@@ -1,9 +1,9 @@
 import { db } from '../../db/setup';
-import { teachers, teachersHistory } from '../../db/schema';
+import { teachers } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { CreateTeacherDTO, UpdateTeacherDTO } from 'teacher/dtos';
-import { createTeacherHistory } from 'teacherHistory/repository/teacherHistory.repository';
-import { CreateTeacherHistoryDTO } from 'teacherHistory/dtos';
+import { createTeacherHistory } from '../../teacherHistory/repository/teacherHistory.repository';
+import { CreateTeacherHistoryDTO } from '../../teacherHistory/dtos';
 
 // CREATE ONE TEACHER
 export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<CreateTeacherDTO> => {
