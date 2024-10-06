@@ -1,10 +1,11 @@
 import express from "express";
-import multer from 'multer';
 import http from "http";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
 import router from "./routes";
+import multer from "multer";
+import { ImportTeachersXlsx } from "./teacher/controller/teacher.controller";
 
 require('dotenv').config()
 
@@ -26,8 +27,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true, }));
 
 const server = http.createServer(app);
-
-const upload = multer({ dest: 'uploads' });
 
 app.use("/", router())
 
