@@ -1,7 +1,10 @@
 import express from "express";
+import xlsx from "xlsx";
+import fs from 'fs';
 import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
+import { createTeacherFromRow } from "teacher/utils";
 
 export const CreateTeacher = async (req: express.Request, res: express.Response): Promise<CreateTeacherDTO | any> => {
     try {
@@ -114,6 +117,35 @@ export const DeleteTeacher = async (req: express.Request, res: express.Response)
         return res.status(200).json(resutl)
     } catch (error) {
 
+        handleError(() => console.log(error));
+        return res.sendStatus(400);
+    }
+}
+
+
+// import feature
+export const ImportTeachersXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
+
+    try {
+        const filePath = req.file.path;
+        const workbook = xlsx.readFile(filePath);
+        const sheetName = workbook.SheetNames[0]; // Assuming you want to read the first sheet
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = xlsx.utils.sheet_to_json(worksheet);
+        console.log(jsonData)
+        // const results = [];
+        // for (const row of jsonData) {
+        //     const result = await createTeacherFromRow(row);
+        //     results.push(result);
+        // }
+
+
+        // // Clean up the uploaded file
+        // fs.unlinkSync(filePath); // Remove the temporary file
+
+        // return res.status(200).json(results);
+        return res.status(200).json("done");
+    } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);
     }

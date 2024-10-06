@@ -1,4 +1,5 @@
 import express from "express";
+import multer from 'multer';
 import http from "http";
 import cookieParser from "cookie-parser";
 import compression from "compression";
@@ -25,6 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true, }));
 
 const server = http.createServer(app);
+
+const upload = multer({ dest: 'uploads' });
 
 app.use("/", router())
 
