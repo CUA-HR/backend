@@ -121,7 +121,24 @@ export const DeleteTeacher = async (req: express.Request, res: express.Response)
         return res.sendStatus(400);
     }
 }
+enum MatrialStatus {
+    متزوج = 'متزوج',
+    أعزب = 'أعزب',
+}
 
+enum Degree {
+    D0 = "0",
+    D1 = "1",
+    D2 = "2",
+    D3 = "3",
+    D4 = "4",
+    D5 = "5",
+    D6 = "6",
+    D7 = "7",
+    D8 = "8",
+    D9 = "9",
+    D12 = "12",
+}
 
 // import feature
 export const ImportTeachersXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
@@ -137,32 +154,30 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
         const sheetName = workbook.SheetNames[worksheetIndex || 0]; // Assuming you want to read the first sheet
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = xlsx.utils.sheet_to_json(worksheet).splice(2);
-        const results = [];
-        let i = 0;
         for (const _ of jsonData) {
             const row = Object.values(_);
             const createTeacherDto = new CreateTeacherDTO(
                 row[2],
                 row[3],
-                `test${i}@cu-aflou.edu.dz`,
-                new Date(row[5]) || new Date("12-12-2000"),
-                "أعزب",
+                row[28] || null,
+                new Date(row[5]) || null,
+                row[6] as MatrialStatus || null,
                 row[7],
-                "0",
-                "0",
+                `D${row[9]}` as Degree,
+                `D${row[10]}` as Degree,
                 new Date(row[11]),
                 highPostion,
                 tierId,
-                positionId
+                positionId,
             );
-            const result = await createTeacherFromRow(createTeacherDto);
-            results.push(result);
-            i += 1;
+            await createTeacherFromRow(createTeacherDto);
         }
         // Clean up the uploaded file
         fs.unlinkSync(filePath); // Remove the temporary file
 
-        return res.status(200).json(results);
+        return res.status(200).json({
+            msg: `${jsonData.length} field(s) was added.`
+        });
     } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);
