@@ -17,6 +17,7 @@ export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<Cr
         })
         return createTeacher; // Assuming `insertId` is returned
     } catch (error) {
+        console.log(error)
         throw new Error('Failed to create teacher'); // Handle errors appropriately
     }
 };

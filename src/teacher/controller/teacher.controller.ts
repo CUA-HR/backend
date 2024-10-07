@@ -149,13 +149,14 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
             tierId,
             positionId,
             worksheetIndex,
-        } = req.body;
+        } = req.query;
         const workbook = xlsx.readFile(filePath);
-        const sheetName = workbook.SheetNames[worksheetIndex || 0]; // Assuming you want to read the first sheet
+        const sheetName = workbook.SheetNames[Number(worksheetIndex) || 0]; // Assuming you want to read the first sheet
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = xlsx.utils.sheet_to_json(worksheet).splice(2);
         for (const _ of jsonData) {
             const row = Object.values(_);
+            console.log(_)
             const createTeacherDto = new CreateTeacherDTO(
                 row[2],
                 row[3],
@@ -166,9 +167,9 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
                 `D${row[9]}` as Degree,
                 `D${row[10]}` as Degree,
                 new Date(row[11]),
-                highPostion,
-                tierId,
-                positionId,
+                Boolean(highPostion),
+                Number(tierId),
+                Number(positionId),
             );
             await createTeacherFromRow(createTeacherDto);
         }
