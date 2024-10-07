@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "ee94a75b-590d-44da-ae27-fb20414af821",
+  "id": "5c1694ce-9c7f-4bbb-9bc5-0e2d3b9331f1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "durations": {
@@ -207,21 +207,21 @@
           "name": "email",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "dob": {
           "name": "dob",
           "type": "date",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "matrialStatus": {
           "name": "matrialStatus",
           "type": "enum('متزوج','أعزب')",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "age": {
@@ -307,14 +307,7 @@
           ]
         }
       },
-      "uniqueConstraints": {
-        "teachers_email_unique": {
-          "name": "teachers_email_unique",
-          "columns": [
-            "email"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     },
     "teachersHistory": {
       "name": "teachersHistory",

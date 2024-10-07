@@ -31,17 +31,16 @@ CREATE TABLE `teachers` (
 	`id` bigint unsigned AUTO_INCREMENT NOT NULL,
 	`firstname` varchar(256) NOT NULL,
 	`lastname` varchar(256) NOT NULL,
-	`email` varchar(256) NOT NULL,
-	`dob` date NOT NULL,
-	`matrialStatus` enum('متزوج','أعزب') NOT NULL,
+	`email` varchar(256),
+	`dob` date,
+	`matrialStatus` enum('متزوج','أعزب'),
 	`age` int,
 	`highPostion` boolean NOT NULL,
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`tierId` bigint unsigned NOT NULL,
 	`positionId` bigint unsigned NOT NULL,
-	CONSTRAINT `teachers_id` PRIMARY KEY(`id`),
-	CONSTRAINT `teachers_email_unique` UNIQUE(`email`)
+	CONSTRAINT `teachers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `teachersHistory` (
