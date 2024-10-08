@@ -170,7 +170,11 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
                 Number(positionId),
                 Number(tierId),
             );
-            await createTeacherFromRow(createTeacherDto);
+            try {
+                await createTeacherFromRow(createTeacherDto);
+            } catch (error) {
+                continue;
+            }
         }
         // Clean up the uploaded file
         fs.unlinkSync(filePath); // Remove the temporary file
