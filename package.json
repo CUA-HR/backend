@@ -5,6 +5,7 @@
   "main": "./dist/app.js",
   "scripts": {
     "dev": "nodemon",
+    "prod": "node dist/app.js",
     "build": "tsc",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
