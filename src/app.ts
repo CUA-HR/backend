@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
 import router from "./routes";
+import multer from "multer";
+import { ImportTeachersXlsx } from "./teacher/controller/teacher.controller";
 
 require('dotenv').config()
 

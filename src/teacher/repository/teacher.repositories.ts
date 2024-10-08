@@ -9,15 +9,7 @@ import { CreateTeacherHistoryDTO } from '../../teacherHistory/dtos';
 export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<CreateTeacherDTO> => {
     try {
         await (await db).transaction(async (tx) => {
-            const result = await (await db).insert(teachers).values({
-                firstname: createTeacher.firstname,
-                lastname: createTeacher.lastname,
-                email: createTeacher.email,
-                dob: createTeacher.dob,
-                matrialStatus: createTeacher.matrialStatus,
-                positionId: createTeacher.positionId,
-                tierId: createTeacher.tierId,
-            }).execute();
+            const result = await (await db).insert(teachers).values(createTeacher).execute();
             const { currentDegree, nextDegree, effectiveDate } = createTeacher;
             const teacherId = result[0].insertId
             const createTeacherHistoryDTO = new CreateTeacherHistoryDTO(teacherId, currentDegree, nextDegree, effectiveDate)
@@ -25,6 +17,7 @@ export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<Cr
         })
         return createTeacher; // Assuming `insertId` is returned
     } catch (error) {
+        console.log(error)
         throw new Error('Failed to create teacher'); // Handle errors appropriately
     }
 };

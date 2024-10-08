@@ -1,7 +1,10 @@
 import express from "express";
+import xlsx from "xlsx";
+import fs from 'fs';
 import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
+import { createTeacherFromRow } from "../utils";
 
 export const CreateTeacher = async (req: express.Request, res: express.Response): Promise<CreateTeacherDTO | any> => {
     try {
@@ -114,6 +117,72 @@ export const DeleteTeacher = async (req: express.Request, res: express.Response)
         return res.status(200).json(resutl)
     } catch (error) {
 
+        handleError(() => console.log(error));
+        return res.sendStatus(400);
+    }
+}
+enum MatrialStatus {
+    متزوج = 'متزوج',
+    أعزب = 'أعزب',
+}
+
+enum Degree {
+    D0 = "0",
+    D1 = "1",
+    D2 = "2",
+    D3 = "3",
+    D4 = "4",
+    D5 = "5",
+    D6 = "6",
+    D7 = "7",
+    D8 = "8",
+    D9 = "9",
+    D12 = "12",
+}
+
+// import feature
+export const ImportTeachersXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+        const filePath = req.file.path;
+        const {
+            highPosition,
+            tierId,
+            positionId,
+            worksheetIndex,
+        } = req.query;
+        const workbook = xlsx.readFile(filePath);
+        const sheetName = workbook.SheetNames[Number(worksheetIndex) || 0]; // Assuming you want to read the first sheet
+        const worksheet = workbook.Sheets[sheetName];
+        const csvData = xlsx.utils.sheet_to_csv(worksheet).split("\n").splice(3);
+        for (const _ of csvData) {
+            const row = _.split(",");
+            const createTeacherDto = new CreateTeacherDTO(
+                row[2],
+                row[3],
+                row[28] || null,
+                new Date(row[5]) || null,
+                row[6] as MatrialStatus || null,
+                Number(row[7]),
+                `${row[9]}` as Degree,
+                `${row[10]}` as Degree,
+                new Date(row[11]),
+                Boolean(highPosition),
+                Number(positionId),
+                Number(tierId),
+            );
+            try {
+                await createTeacherFromRow(createTeacherDto);
+            } catch (error) {
+                continue;
+            }
+        }
+        // Clean up the uploaded file
+        fs.unlinkSync(filePath); // Remove the temporary file
+
+        return res.status(200).json({
+            msg: `${csvData.length} field(s) was added.`
+        });
+    } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);
     }
