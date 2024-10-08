@@ -145,7 +145,7 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
     try {
         const filePath = req.file.path;
         const {
-            highPostion,
+            highPosition,
             tierId,
             positionId,
             worksheetIndex,
@@ -153,23 +153,22 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
         const workbook = xlsx.readFile(filePath);
         const sheetName = workbook.SheetNames[Number(worksheetIndex) || 0]; // Assuming you want to read the first sheet
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData = xlsx.utils.sheet_to_json(worksheet).splice(2);
-        for (const _ of jsonData) {
-            const row = Object.values(_);
-            console.log(_)
+        const csvData = xlsx.utils.sheet_to_csv(worksheet).split("\n").splice(3);
+        for (const _ of csvData) {
+            const row = _.split(",");
             const createTeacherDto = new CreateTeacherDTO(
                 row[2],
                 row[3],
                 row[28] || null,
                 new Date(row[5]) || null,
                 row[6] as MatrialStatus || null,
-                row[7],
-                `D${row[9]}` as Degree,
-                `D${row[10]}` as Degree,
+                Number(row[7]),
+                `${row[9]}` as Degree,
+                `${row[10]}` as Degree,
                 new Date(row[11]),
-                Boolean(highPostion),
-                Number(tierId),
+                Boolean(highPosition),
                 Number(positionId),
+                Number(tierId),
             );
             await createTeacherFromRow(createTeacherDto);
         }
@@ -177,7 +176,7 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
         fs.unlinkSync(filePath); // Remove the temporary file
 
         return res.status(200).json({
-            msg: `${jsonData.length} field(s) was added.`
+            msg: `${csvData.length} field(s) was added.`
         });
     } catch (error) {
         handleError(() => console.log(error));
