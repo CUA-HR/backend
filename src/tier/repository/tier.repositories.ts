@@ -6,7 +6,6 @@ import { CreateTierDTO, UpdateTierDTO } from '../dtos';
 // CREATE ONE Tier
 export const createTier = async (createTier: CreateTierDTO): Promise<CreateTierDTO> => {
     try {
-
         const result = await (await db).insert(tiers).values(createTier).execute();
         return createTier; // Assuming `insertId` is returned
     } catch (error) {

@@ -3,17 +3,14 @@ import http from "http";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
+import dotenv from "dotenv";
 import router from "./routes";
-import multer from "multer";
-import { ImportTeachersXlsx } from "./teacher/controller/teacher.controller";
 
-require('dotenv').config()
+dotenv.config();
 
 const app = express();
 
-
-
-const port = process.env.PORT || 8000
+const port = process.env.PORT || 5000
 
 app.use(cors({
     credentials: true
@@ -24,6 +21,7 @@ app.use(compression());
 app.use(cookieParser());
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true, }));
 
 const server = http.createServer(app);
