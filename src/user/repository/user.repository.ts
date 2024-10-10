@@ -5,11 +5,13 @@ import { eq } from 'drizzle-orm';
 
 
 export const createUser = async (createUserDto: CreateUserDTO): Promise<UserDTO> => {
+    
     try {
         const result = await (await db).insert(users).values(createUserDto).execute();
         const user = await getUserById(result[0].insertId);
         return user;
     } catch (error) {
+        console.log(error)
         throw new Error('Failed to create User'); // Handle errors appropriately
     }
 }

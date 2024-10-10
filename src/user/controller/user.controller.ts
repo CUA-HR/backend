@@ -1,9 +1,9 @@
 import express from "express";
 import { CreateUserDTO, LoginUserDTO, LoginUserOutputDTO, UserDTO } from "user/dtos";
-import { createUser, getUserByEmail } from "user/repository/user.repository";
+import { createUser, getUserByEmail } from "../repository/user.repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
-import { handleError } from "utils/errors";
+import { handleError } from "../../utils/errors";
 import dotenv from "dotenv";
 
 dotenv.config()
@@ -53,7 +53,7 @@ export const Register = async (req: express.Request, res: express.Response): Pro
         }
 
         const user = await getUserByEmail(createUserDto.email);
-
+        
         if (user) {
             return res.sendStatus(400)
         }
