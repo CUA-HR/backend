@@ -64,9 +64,9 @@ export const Register = async (req: express.Request, res: express.Response): Pro
 
         const payload = {
             sub: createdUser.id,
-            email: user.email,
-            role: user.roleId,
-            name: user.name,
+            email: createdUser.email,
+            role: createdUser.roleId,
+            name: createdUser.name,
         }
 
         const token = jwt.sign(payload, process.env.SECRET_KEY);
