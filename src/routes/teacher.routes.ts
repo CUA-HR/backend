@@ -1,5 +1,7 @@
 import express from "express";
 import { AllTeachers, CreateTeacher, DeleteTeacher, ImportTeachersXlsx, Teacher, UpdateTeacher } from "../teacher/controller/teacher.controller";
+import { verifyToken } from "../middlewares/auth.middleware";
+
 import multer from "multer";
 
 // Multer configuration for handling file uploads
@@ -17,11 +19,11 @@ const upload = multer({ storage: storage });
 
 export default (router: express.Router) => {
     // CRUD
-    router.post("/teacher/create", CreateTeacher);
-    router.get("/teacher/all", AllTeachers);
-    router.get("/teacher/:id", Teacher);
-    router.put("/teacher/update", UpdateTeacher);
-    router.delete("/teacher/delete/:id", DeleteTeacher);
+    router.post("/teacher/create", verifyToken, CreateTeacher);
+    router.get("/teacher/all", verifyToken, AllTeachers);
+    router.get("/teacher/:id", verifyToken, Teacher);
+    router.put("/teacher/update", verifyToken, UpdateTeacher);
+    router.delete("/teacher/delete/:id", verifyToken, DeleteTeacher);
 
     // Import
     router.post("/teacher/import/xlsx", upload.single("file"), ImportTeachersXlsx);

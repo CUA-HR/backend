@@ -1,12 +1,36 @@
 import express from "express";
-import { CreateUserDTO, LoginUserDTO, LoginUserOutputDTO, UserDTO } from "user/dtos";
-import { createUser, getUserByEmail } from "../repository/user.repository";
+import { CreateUserDTO, LoginUserDTO, LoginUserOutputDTO, UpdateUserDTO, UserDTO } from "user/dtos";
+import { createUser, getUserByEmail, getUserById, updateMe } from "../repository/user.repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { handleError } from "../../utils/errors";
 import dotenv from "dotenv";
 
 dotenv.config()
+
+export const Me = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+        const { id } = req.user.id;
+        const me = await getUserById(Number(id));
+        return res.status(200).json(me);
+    } catch (error) {
+        handleError(error);
+        return res.sendStatus(400);
+    }
+}
+
+export const UpdateMe = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+        const { id } = req.user.id;
+        const updateUserDTO: UpdateUserDTO = req.body;
+        await updateMe(updateUserDTO, id);
+        return res.status(200).json({ "msg": "Informations updated" });
+    } catch (error) {
+        handleError(error);
+        return res.sendStatus(400);
+    }
+}
+
 
 export const Login = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
@@ -53,7 +77,7 @@ export const Register = async (req: express.Request, res: express.Response): Pro
         }
 
         const user = await getUserByEmail(createUserDto.email);
-        
+
         if (user) {
             return res.sendStatus(400)
         }
