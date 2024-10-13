@@ -1,9 +1,10 @@
 import { db } from '../../db/setup';
 import { teachers } from '../../db/schema';
 import { eq } from 'drizzle-orm';
-import { CreateTeacherDTO, UpdateTeacherDTO } from 'teacher/dtos';
+import { CreateTeacherDTO, TeacherDTO, UpdateTeacherDTO } from '../dtos';
 import { createTeacherHistory } from '../../teacherHistory/repository/teacherHistory.repository';
 import { CreateTeacherHistoryDTO } from '../../teacherHistory/dtos';
+import { MatrialStatus } from 'teacher/teacher.enums';
 
 // CREATE ONE TEACHER
 export const createTeacher = async (createTeacher: CreateTeacherDTO): Promise<CreateTeacherDTO> => {
@@ -28,8 +29,22 @@ export const allTeachers = async (): Promise<any[]> => {
 }
 
 /// GET ONE TEACHER
-export const teacher = async (id: number): Promise<any[]> => {
-    return (await db).select().from(teachers).where(eq(teachers.id, id));
+export const teacher = async (id: number): Promise<TeacherDTO> => {
+    const result = await (await db).select().from(teachers).where(eq(teachers.id, id));
+    return new TeacherDTO(
+        result[0].id,
+        result[0].firstname,
+        result[0].lastname,
+        result[0].email,
+        result[0].dob,
+        result[0].matrialStatus as MatrialStatus,
+        result[0].age,
+        result[0].highPostion,
+        result[0].createdAt,
+        result[0].updatedAt,
+        result[0].tierId,
+        result[0].positionId,
+    );
 }
 
 

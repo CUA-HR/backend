@@ -1,4 +1,4 @@
 import { CreateTeacherHistoryDTO } from "./create.teacherHistory.dto";
 import { UpdateTeacherHistoryDTO } from "./update.teacherHistory.dto";
-
-export { CreateTeacherHistoryDTO, UpdateTeacherHistoryDTO };
+import { TeacherHistoryDTO } from "./teacherHistory.dto";
+export { CreateTeacherHistoryDTO, UpdateTeacherHistoryDTO, TeacherHistoryDTO };

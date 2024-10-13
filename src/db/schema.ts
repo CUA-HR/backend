@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { bigint, mysqlTable, timestamp, varchar, text, mysqlEnum, int, date, boolean } from "drizzle-orm/mysql-core";
+import { bigint, mysqlTable, timestamp, varchar, text, mysqlEnum, int, date, boolean, float } from "drizzle-orm/mysql-core";
 
 
 /// USER SCHEMA
@@ -73,6 +73,8 @@ export const teachersHistory = mysqlTable("teachersHistory", {
     nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
     effectiveDate: date("effectiveDate", { mode: "date" }).notNull(),
     highPostion: boolean("highPostion").notNull(),
+    southernPrivilege: float("southernPrivilege").default(0),
+    professionalExperience: float("professionalExperience").default(0.0),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 

@@ -5,6 +5,8 @@ import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
 import { createTeacherFromRow } from "../utils";
+import { teacherLastHistory } from "../../teacherHistory/repository/teacherHistory.repository";
+import { Degree, MatrialStatus } from "../teacher.enums";
 
 export const CreateTeacher = async (req: express.Request, res: express.Response): Promise<CreateTeacherDTO | any> => {
     try {
@@ -121,24 +123,7 @@ export const DeleteTeacher = async (req: express.Request, res: express.Response)
         return res.sendStatus(400);
     }
 }
-enum MatrialStatus {
-    متزوج = 'متزوج',
-    أعزب = 'أعزب',
-}
 
-enum Degree {
-    D0 = "0",
-    D1 = "1",
-    D2 = "2",
-    D3 = "3",
-    D4 = "4",
-    D5 = "5",
-    D6 = "6",
-    D7 = "7",
-    D8 = "8",
-    D9 = "9",
-    D12 = "12",
-}
 
 // import feature
 export const ImportTeachersXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
@@ -182,6 +167,35 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
         return res.status(200).json({
             msg: `${csvData.length} field(s) was added.`
         });
+    } catch (error) {
+        handleError(() => console.log(error));
+        return res.sendStatus(400);
+    }
+}
+
+
+
+// upgrade teacher 
+export const UpgradeTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+        const {
+            id,
+            southernPrivilege, // إمتياز الجنوب
+            professionalExperience, // الخبرة المهنية
+        } = req.body;
+        const {
+            highPostion,
+            positionId,
+            tierId
+        } = await teacher(Number(id));
+        const {
+            currentDegree,
+            nextDegree,
+        } = await teacherLastHistory(Number(id));
+        const monthsToAdd = southernPrivilege + professionalExperience;
+        
+        return res.status(200).json({ currentDegree })
+
     } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);
