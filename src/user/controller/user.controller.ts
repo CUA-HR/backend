@@ -10,23 +10,23 @@ dotenv.config()
 
 export const Me = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-        const { id } = req.user.id;
+        const id = req.user.sub;
         const me = await getUserById(Number(id));
         return res.status(200).json(me);
     } catch (error) {
-        handleError(error);
+        handleError(() => console.log(error));
         return res.sendStatus(400);
     }
 }
 
 export const UpdateMe = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-        const { id } = req.user.id;
+        const id = req.user.sub;
         const updateUserDTO: UpdateUserDTO = req.body;
         await updateMe(updateUserDTO, id);
         return res.status(200).json({ "msg": "Informations updated" });
     } catch (error) {
-        handleError(error);
+        handleError(() => console.log(error));
         return res.sendStatus(400);
     }
 }
@@ -57,13 +57,13 @@ export const Login = async (req: express.Request, res: express.Response): Promis
             name: user.name,
         };
 
-        const token = jwt.sign(payload, process.env.SECRET_KEY);
+        const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: process.env.EXPIRES_IN });
 
         const response: LoginUserOutputDTO = { token }; // Create the response object
 
         return res.status(200).json(response); // Send response as JSON
     } catch (error) {
-        handleError(error);
+        handleError(() => console.log(error));
         return res.sendStatus(400);
     }
 }
@@ -98,7 +98,7 @@ export const Register = async (req: express.Request, res: express.Response): Pro
         return res.status(200).json({ token: token });
 
     } catch (error) {
-        console.log(error);
+        handleError(() => console.log(error));
         return res.sendStatus(400);
     }
 }
