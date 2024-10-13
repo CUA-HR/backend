@@ -23,8 +23,8 @@ export const UpdateMe = async (req: express.Request, res: express.Response): Pro
     try {
         const id = req.user.sub;
         const updateUserDTO: UpdateUserDTO = req.body;
-        await updateMe(updateUserDTO, id);
-        return res.status(200).json({ "msg": "Informations updated" });
+        const me = await updateMe(updateUserDTO, id);
+        return res.status(200).json(me);
     } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);

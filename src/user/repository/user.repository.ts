@@ -39,7 +39,8 @@ export const getUserById = async (id: number): Promise<UserDTO | null> => {
 export const updateMe = async (updateUserDTO: UpdateUserDTO, id: number): Promise<UpdateUserDTO | null> => {
     try {
         const result = await (await db).update(users).set(updateUserDTO).where(eq(users.id, id))
-        // Return the first user or null if none found
+        if (result.length <= 0) return null;
+        if (result[0].affectedRows === 1 && result[0].changedRows) return await getUserById(result[0].insertId);
         return updateUserDTO;
     } catch (error) {
         throw new Error('Failed to update User'); // Handle errors appropriately
