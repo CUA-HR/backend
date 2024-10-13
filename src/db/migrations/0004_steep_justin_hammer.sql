@@ -1,0 +1,1 @@
+ALTER TABLE `durations` MODIFY COLUMN `duration` float NOT NULL;

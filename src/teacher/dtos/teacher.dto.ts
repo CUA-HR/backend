@@ -8,6 +8,7 @@ export class TeacherDTO {
     dob: Date;
     matrialStatus: MatrialStatus;
     age: number;
+    debt: number;
     highPostion: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -21,6 +22,7 @@ export class TeacherDTO {
         dob: Date,
         matrialStatus: MatrialStatus,
         age: number,
+        debt: number,
         highPostion: boolean,
         createdAt: Date,
         updatedAt: Date,
@@ -28,16 +30,17 @@ export class TeacherDTO {
         positionId: number,
     ) {
         this.id = id,
-        this.firstname = firstname,
-        this.lastname = lastname,
-        this.email = email,
-        this.dob = dob,
-        this.matrialStatus = matrialStatus,
-        this.age = age,
-        this.highPostion = highPostion,
-        this.createdAt = createdAt,
-        this.updatedAt = updatedAt,
-        this.tierId = tierId,
-        this.positionId = positionId
+            this.firstname = firstname,
+            this.lastname = lastname,
+            this.email = email,
+            this.dob = dob,
+            this.matrialStatus = matrialStatus,
+            this.age = age,
+            this.debt = debt,
+            this.highPostion = highPostion,
+            this.createdAt = createdAt,
+            this.updatedAt = updatedAt,
+            this.tierId = tierId,
+            this.positionId = positionId
     }
 }

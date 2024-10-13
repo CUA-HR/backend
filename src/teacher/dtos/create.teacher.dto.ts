@@ -5,6 +5,7 @@ export class CreateTeacherDTO {
     dob: Date;
     matrialStatus: 'متزوج' | 'أعزب';
     age?: number; // Optional, as it might not be provided
+    debt?: number;
     currentDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12';
     nextDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12';
     effectiveDate: Date;
@@ -19,6 +20,7 @@ export class CreateTeacherDTO {
         dob: Date,
         matrialStatus: 'متزوج' | 'أعزب',
         age: number | undefined,
+        debt: number | undefined,
         currentDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12',
         nextDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12',
         effectiveDate: Date,
@@ -32,6 +34,7 @@ export class CreateTeacherDTO {
         this.dob = dob;
         this.matrialStatus = matrialStatus;
         this.age = age;
+        this.debt = debt;
         this.currentDegree = currentDegree;
         this.nextDegree = nextDegree;
         this.effectiveDate = effectiveDate;

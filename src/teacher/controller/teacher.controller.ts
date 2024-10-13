@@ -4,9 +4,11 @@ import fs from 'fs';
 import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
-import { createTeacherFromRow } from "../utils";
+import { createTeacherFromRow, getTeacherTier } from "../utils";
 import { teacherLastHistory } from "../../teacherHistory/repository/teacherHistory.repository";
 import { Degree, MatrialStatus } from "../teacher.enums";
+import { tier } from "../../tier/repository/tier.repositories";
+import { duration } from "../../duration/repository/duration.repository";
 
 export const CreateTeacher = async (req: express.Request, res: express.Response): Promise<CreateTeacherDTO | any> => {
     try {
@@ -17,6 +19,7 @@ export const CreateTeacher = async (req: express.Request, res: express.Response)
             dob,
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             effectiveDate,
@@ -32,6 +35,7 @@ export const CreateTeacher = async (req: express.Request, res: express.Response)
             new Date(dob), // Ensure dob is a Date object
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             new Date(effectiveDate), // Ensure effectiveDate is a Date object
@@ -80,6 +84,7 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
             dob,
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             effectiveDate,
@@ -96,6 +101,7 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
             new Date(dob), // Ensure dob is a Date object
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             new Date(effectiveDate), // Ensure effectiveDate is a Date object
@@ -148,6 +154,7 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
                 new Date(row[5]) || null,
                 row[6] as MatrialStatus || null,
                 Number(row[7]),
+                undefined,
                 `${row[9]}` as Degree,
                 `${row[10]}` as Degree,
                 new Date(row[11]),
@@ -185,15 +192,21 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
         } = req.body;
         const {
             highPostion,
-            positionId,
-            tierId
+            tierId,
+            debt
         } = await teacher(Number(id));
         const {
             currentDegree,
             nextDegree,
         } = await teacherLastHistory(Number(id));
-        const monthsToAdd = southernPrivilege + professionalExperience;
-        return res.status(200).json({ currentDegree })
+
+        const targetedTier = await getTeacherTier(highPostion, tierId);
+        const durationId = (await tier(targetedTier)).durationId
+        const targetedDuration = (await duration(durationId)).duration;
+        const totalMonths = Number(southernPrivilege) + Number(professionalExperience) + Number(debt);
+        const monthsToAdd = Number(totalMonths - Number(targetedDuration));
+
+        return res.status(200).json({ monthsToAdd })
 
     } catch (error) {
         handleError(() => console.log(error));

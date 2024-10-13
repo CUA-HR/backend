@@ -53,6 +53,7 @@ export const teachers = mysqlTable("teachers", {
     matrialStatus: mysqlEnum('matrialStatus', ['متزوج', 'أعزب']),
     age: int("age"),
     highPostion: boolean("highPostion").notNull().$default(() => false),
+    debt: float("debt").default(0),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
@@ -93,7 +94,7 @@ export const tiers = mysqlTable("tiers", {
     id: bigint("id", { mode: "number", unsigned: true })
         .autoincrement()
         .primaryKey(),
-    name: varchar("name", { length: 256 }).notNull(),
+    name: varchar("name", { length: 256 }).notNull().unique(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
@@ -111,7 +112,7 @@ export const durations = mysqlTable("durations", {
     id: bigint("id", { mode: "number", unsigned: true })
         .autoincrement()
         .primaryKey(),
-    duration: varchar("duration", { length: 256 }).notNull(),
+    duration: float("duration").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
