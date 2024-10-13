@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/app.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon --env-file=.env",
     "prod": "node dist/app.js",
     "build": "tsc",
     "db:generate": "drizzle-kit generate",
