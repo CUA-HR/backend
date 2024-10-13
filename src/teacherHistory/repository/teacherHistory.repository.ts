@@ -40,9 +40,9 @@ export const teacherHistories = async (teacherId: number): Promise<any[]> => {
 }
 
 // GET LAST TEACHER HISTORY
-export const teacherLastHistory = async (teacherId: number): Promise<TeacherHistoryDTO> => {
+export const teacherLastHistory = async (teacherId: number): Promise<TeacherHistoryDTO | null> => {
     const result = await (await db).select().from(teachersHistory).where(eq(teachersHistory.teacherId, teacherId)).limit(1).execute();
-    return new TeacherHistoryDTO(
+    return result.length > 0 ? new TeacherHistoryDTO(
         result[0].id,
         result[0].currentDegree as Degree, // Ensure the type matches Degree
         result[0].nextDegree as Degree, // Ensure the type matches Degree
@@ -53,7 +53,7 @@ export const teacherLastHistory = async (teacherId: number): Promise<TeacherHist
         result[0].createdAt,
         result[0].updatedAt,
         result[0].teacherId
-    )
+    ) : null;
 }
 
 /// GET ONE TEACHER History

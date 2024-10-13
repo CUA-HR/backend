@@ -195,18 +195,20 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
             tierId,
             debt
         } = await teacher(Number(id));
+
+
         const {
             currentDegree,
             nextDegree,
-        } = await teacherLastHistory(Number(id));
+        } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0 };
 
         const targetedTier = await getTeacherTier(highPostion, tierId);
         const durationId = (await tier(targetedTier)).durationId
         const targetedDuration = (await duration(durationId)).duration;
         const totalMonths = Number(southernPrivilege) + Number(professionalExperience) + Number(debt);
-        const monthsToAdd = Number(totalMonths - Number(targetedDuration));
+        const monthsToAdd = Number(Number(totalMonths) - Number(targetedDuration));
 
-        return res.status(200).json({ monthsToAdd })
+        return res.status(200).json({ "total": totalMonths, "added": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": Number(debt) })
 
     } catch (error) {
         handleError(() => console.log(error));
