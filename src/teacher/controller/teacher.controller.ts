@@ -193,7 +193,6 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
             nextDegree,
         } = await teacherLastHistory(Number(id));
         const monthsToAdd = southernPrivilege + professionalExperience;
-        
         return res.status(200).json({ currentDegree })
 
     } catch (error) {
