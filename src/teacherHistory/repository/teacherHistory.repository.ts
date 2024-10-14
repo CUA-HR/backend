@@ -11,7 +11,7 @@ export const createTeacherHistory = async (createTeacherHistory: CreateTeacherHi
         await (await db).insert(teachersHistory).values(createTeacherHistory).execute();
         return createTeacherHistory; // Assuming `insertId` is returned
     } catch (error) {
-        throw new Error('Failed to create teacher'); // Handle errors appropriately
+        throw new Error('Failed to create teacher history'); // Handle errors appropriately
     }
 };
 

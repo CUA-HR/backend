@@ -67,8 +67,8 @@ export const teacher = async (id: number): Promise<TeacherDTO> => {
 
 /// UPDATE ONE TEACHER
 export const updateTeacher = async (updateTeacherDTO: UpdateTeacherDTO): Promise<TeacherDTO> => {
-    const id = (await (await db).update(teachers).set(updateTeacherDTO).where(eq(teachers.id, updateTeacherDTO.id)).execute())[0].insertId
-    return await teacher(id);
+    await (await db).update(teachers).set(updateTeacherDTO).where(eq(teachers.id, updateTeacherDTO.id)).execute()
+    return await teacher(updateTeacherDTO.id);
 }
 
 

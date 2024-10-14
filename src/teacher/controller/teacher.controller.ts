@@ -5,7 +5,7 @@ import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
 import { createTeacherFromRow, getTeacherTier } from "../utils";
-import { teacherLastHistory } from "../../teacherHistory/repository/teacherHistory.repository";
+import { createTeacherHistory, teacherLastHistory } from "../../teacherHistory/repository/teacherHistory.repository";
 import { Degree, MatrialStatus } from "../teacher.enums";
 import { tier } from "../../tier/repository/tier.repositories";
 import { duration } from "../../duration/repository/duration.repository";
@@ -204,11 +204,16 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
 
         const targetedTier = await getTeacherTier(highPostion, tierId);
         const durationId = (await tier(targetedTier)).durationId
-        const targetedDuration = (await duration(durationId)).duration;
-        const totalMonths = Number(southernPrivilege) + Number(professionalExperience) + Number(debt);
-        const monthsToAdd = Number(Number(totalMonths) - Number(targetedDuration));
-
-        return res.status(200).json({ "total": totalMonths, "added": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": Number(debt) })
+        const targetedDuration = (await duration(durationId)).duration; // 2.6
+        const totalMonths = Number(southernPrivilege) + Number(professionalExperience) + Number(debt); // 2.6 - 2.6
+        const monthsToAdd = Number(Number(totalMonths) - Number(targetedDuration)); // months to add to the effective date
+        const decision = monthsToAdd >= 0;
+        if (decision) {
+            const newHistory = await createTeacherHistory({ currentDegree: nextDegree.toString() as Degree, highPostion: highPostion, effectiveDate: new Date(), nextDegree: (parseInt(nextDegree.toString()) + 1).toString() as Degree, teacherId: id });
+            await updateTeacher({ id: id, debt: 0 })
+            return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": Number(debt), "decision": decision, newHistory: newHistory })
+        }
+        return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": Number(debt), "decision": decision, "reason": "Nothing to add beacause months to add are less then targeted tier duration." })
 
     } catch (error) {
         handleError(() => console.log(error));
