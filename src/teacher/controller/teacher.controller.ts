@@ -1,6 +1,7 @@
 import express from "express";
 import xlsx from "xlsx";
 import fs from 'fs';
+import moment from "moment";
 import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
@@ -193,13 +194,14 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
         const {
             highPostion,
             tierId,
-            debt
+            debt,
         } = await teacher(Number(id));
 
 
         const {
             currentDegree,
             nextDegree,
+            effectiveDate
         } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0 };
 
         const targetedTier = await getTeacherTier(highPostion, tierId);
@@ -209,11 +211,13 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
         const monthsToAdd = Number(Number(totalMonths) - Number(targetedDuration)); // months to add to the effective date
         const decision = monthsToAdd >= 0;
         if (decision) {
+            const newEffectiveDate = moment(effectiveDate).add(monthsToAdd, "months");
             const newHistory = await createTeacherHistory({ currentDegree: nextDegree.toString() as Degree, highPostion: highPostion, effectiveDate: new Date(), nextDegree: (parseInt(nextDegree.toString()) + 1).toString() as Degree, teacherId: id });
             await updateTeacher({ id: id, debt: 0 })
-            return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": Number(debt), "decision": decision, newHistory: newHistory })
+            return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, debt, decision, newHistory, newEffectiveDate })
         }
-        return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": Number(debt), "decision": decision, "reason": "Nothing to add beacause months to add are less then targeted tier duration." })
+        const reason = "Nothing to add beacause months to add are less then targeted tier duration.";
+        return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, debt, decision, reason })
 
     } catch (error) {
         handleError(() => console.log(error));
