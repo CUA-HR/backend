@@ -212,12 +212,12 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
         const decision = monthsToAdd >= 0;
         if (decision) {
             const newEffectiveDate = moment(effectiveDate).add(monthsToAdd, "months");
-            const newHistory = await createTeacherHistory({ currentDegree: nextDegree.toString() as Degree, highPostion: highPostion, effectiveDate: new Date(), nextDegree: (parseInt(nextDegree.toString()) + 1).toString() as Degree, teacherId: id });
+            const newHistory = await createTeacherHistory({ currentDegree: nextDegree.toString() as Degree, highPostion: highPostion, effectiveDate: effectiveDate, nextDegree: (parseInt(nextDegree.toString()) + 1).toString() as Degree, teacherId: id });
             await updateTeacher({ id: id, debt: 0 })
-            return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, debt, decision, newHistory, newEffectiveDate })
+            return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": debt, "decision": decision, "newHistory": newHistory, "newEffectiveDate": newEffectiveDate })
         }
         const reason = "Nothing to add beacause months to add are less then targeted tier duration.";
-        return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, debt, decision, reason })
+        return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": debt, "decision": decision, "reason": reason })
 
     } catch (error) {
         handleError(() => console.log(error));

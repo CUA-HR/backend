@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { bigint, mysqlTable, timestamp, varchar, text, mysqlEnum, int, date, boolean, float } from "drizzle-orm/mysql-core";
+import { now } from "moment";
 
 
 /// USER SCHEMA
