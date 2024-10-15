@@ -71,8 +71,8 @@ export const teachersHistory = mysqlTable("teachersHistory", {
     id: bigint("id", { mode: "number", unsigned: true })
         .autoincrement()
         .primaryKey(),
-    currentDegree: mysqlEnum("currentDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
-    nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
+    currentDegree: mysqlEnum("currentDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).notNull(),
+    nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).notNull(),
     effectiveDate: date("effectiveDate", { mode: "date" }).notNull(),
     highPostion: boolean("highPostion").notNull(),
     southernPrivilege: float("southernPrivilege").default(0),

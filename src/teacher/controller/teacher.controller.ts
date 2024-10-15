@@ -156,8 +156,8 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
                 row[6] as MatrialStatus || null,
                 Number(row[7]),
                 undefined,
-                `${row[9]}` as Degree,
-                `${row[10]}` as Degree,
+                row[9] as Degree,
+                row[10] as Degree,
                 new Date(row[11]),
                 Boolean(highPosition),
                 Number(positionId),
@@ -186,15 +186,6 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 // upgrade teacher 
 export const UpgradeTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-        /* 
-            step 1- Getting required data from the request body.
-            step 2- Getting the teacher information.
-                step 2.1- Getting the teacher history information.
-            step 3- Getting the duration of the tier assigned to the teacher.
-            step 4- Calculating the time from the effective date to the new year to make a decision (upgrade / don't upgrade).
-        */
-
-
         // step 1: Getting required data from the request body
         const {
             id,
@@ -202,31 +193,16 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
             professionalExperience, // الخبرة المهنية
         } = req.body;
 
-        // step 2: Getting the teacher information
-        const {
-            highPostion,
-            tierId,
-            debt,
-        } = await teacher(Number(id));
-        // step 2.1: Getting teacher history information
-        const {
-
-            nextDegree,
-            effectiveDate
-        } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0, effectiveDate: new Date() };
-
         const upgradeTeacherDetailsInput = new UpgradeTeacherInputDTO(Number(id), Number(southernPrivilege), Number(professionalExperience))
 
         const details = await upgradeTeacherDetails(upgradeTeacherDetailsInput);
 
         if (details.upgrade) {
+
             if (details.upgradeWithDebt) {
                 await updateTeacher({ id: id, debt: Number(details.newDebt) });
-            } else if (details.upgradeWithoutDebt) {
-                const decision = "Upgrade the teacher.";
-                const reason = "Teacher upgraded because all conditions are satisfied.";
-                return res.status(200).json({ ...details, decision, reason })
             }
+
             await createTeacherHistory({
                 teacherId: id,
                 effectiveDate: details.newEffectiveDate,
@@ -234,6 +210,11 @@ export const UpgradeTeacher = async (req: express.Request, res: express.Response
                 currentDegree: details.currentDegree,
                 nextDegree: details.nextDegree
             })
+            
+
+            const decision = "Upgrade the teacher.";
+            const reason = "Teacher upgraded because all conditions are satisfied.";
+            return res.status(200).json({ ...details, decision, reason })
         }
         const decision = "Don't upgrade the teacher, conditions are not satisfied.";
         const reason = "Nothing to add beacause months to add are less then targeted tier duration.";

@@ -39,9 +39,8 @@ export const upgradeTeacherDetails = async (upgradeTeacherInputDTO: UpgradeTeach
     const {
         currentDegree,
         nextDegree,
-        effectiveDate
+        effectiveDate,
     } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0, effectiveDate: new Date() };
-
 
 
     // note: All periods are in months
@@ -65,7 +64,6 @@ export const upgradeTeacherDetails = async (upgradeTeacherInputDTO: UpgradeTeach
             newDebt = Math.max(debt - targetedDuration, 0);
         }
         monthsToAdd = monthsToAddWithoutDebt;
-
         return new UpgradeTeacherResponseDTO(
             id,
             totalMonths,
@@ -74,8 +72,8 @@ export const upgradeTeacherDetails = async (upgradeTeacherInputDTO: UpgradeTeach
             upgradeWithDebt,
             !upgradeWithDebt,
             effectiveDate,
-            currentDegree as Degree,
             nextDegree as Degree,
+            (parseInt(nextDegree.toString()) + 1).toString() as Degree,
             highPostion,
             debt,
             newDebt,
