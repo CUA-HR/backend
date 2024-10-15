@@ -110,8 +110,8 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
             positionId,
             tierId,
         );
-        const resutl = await updateTeacher(updateTeacherDTO);
-        return res.status(200).json(resutl)
+        const result = await updateTeacher(updateTeacherDTO);
+        return res.status(200).json(result)
     } catch (error) {
 
         handleError(() => console.log(error));
@@ -122,8 +122,8 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
 export const DeleteTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
     const { id } = req.params;
     try {
-        const resutl = await deleteTeacher(Number(id));
-        return res.status(200).json(resutl)
+        const result = await deleteTeacher(Number(id));
+        return res.status(200).json(result)
     } catch (error) {
 
         handleError(() => console.log(error));
@@ -186,38 +186,74 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 // upgrade teacher 
 export const UpgradeTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
+        /* 
+            step 1- Getting required data from the request body.
+            step 2- Getting the teacher information.
+                step 2.1- Getting the teacher history information.
+            step 3- Getting the duration of the tier assigned to the teacher.
+            step 4- Calculating the time from the effective date to the new year to make a decision (upgrade / don't upgrade).
+        */
+
+        let upgrade = false;
+        let monthsToAdd = undefined;
+
+        // step 1: Getting required data from the request body
         const {
             id,
             southernPrivilege, // إمتياز الجنوب
             professionalExperience, // الخبرة المهنية
         } = req.body;
+
+        // step 2: Getting the teacher information
         const {
             highPostion,
             tierId,
             debt,
         } = await teacher(Number(id));
-
-
+        // step 2.1: Getting teacher history information
         const {
-            currentDegree,
             nextDegree,
             effectiveDate
-        } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0 };
+        } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0, effectiveDate: new Date() };
 
+
+        // note: All periods are in months
+        // step 3: Getting duration of the tier assigned to the teacher
         const targetedTier = await getTeacherTier(highPostion, tierId);
         const durationId = (await tier(targetedTier)).durationId
-        const targetedDuration = (await duration(durationId)).duration; // 2.6
-        const totalMonths = Number(southernPrivilege) + Number(professionalExperience) + Number(debt); // 2.6 - 2.6
-        const monthsToAdd = Number(Number(totalMonths) - Number(targetedDuration)); // months to add to the effective date
-        const decision = monthsToAdd >= 0;
-        if (decision) {
+        const targetedDuration = Number((await duration(durationId)).duration); // like: 2.6, 3, 3.6
+
+        // step 4: Calculating the time from the effective date to the new year to make a decision (upgrade / don't upgrade)
+        const nextYearFirstDay = moment(moment().endOf("year")).add(1, "days");
+        const fromEffectiveDateToNextYear = Number(moment(nextYearFirstDay).diff(effectiveDate, "days") / 30);
+        const totalMonths = Number(southernPrivilege) + Number(professionalExperience) + fromEffectiveDateToNextYear;
+        const monthsToAddWithoutDebt = totalMonths - targetedDuration; // months to add to the effective date without the debt
+        const monthsToAddWithDebt = monthsToAddWithoutDebt + debt; // months to add to the effective date with the debt
+
+
+        if (monthsToAddWithoutDebt >= 0 || monthsToAddWithDebt >= targetedDuration) {
+            upgrade = true;
+            if (monthsToAddWithoutDebt < 0) { // with debt, so we should update the new debt
+                const newDebt = Math.max(debt - targetedDuration, 0);
+                await updateTeacher({ id: id, debt: newDebt });
+                monthsToAdd = monthsToAddWithDebt;
+            }
+            monthsToAdd = monthsToAddWithoutDebt;
+        } else {
+            const decision = "Don't upgrade the teacher, conditions are not satisfied.";
+            const monthsToAdd = monthsToAddWithDebt;
+            const reason = "Nothing to add beacause months to add are less then targeted tier duration.";
+            return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": debt, "decision": decision, "reason": reason })
+        }
+
+        if (upgrade) {
+            const decision = "Upgrade the teacher."
             const newEffectiveDate = moment(effectiveDate).add(monthsToAdd, "months");
             const newHistory = await createTeacherHistory({ currentDegree: nextDegree.toString() as Degree, highPostion: highPostion, effectiveDate: effectiveDate, nextDegree: (parseInt(nextDegree.toString()) + 1).toString() as Degree, teacherId: id });
             await updateTeacher({ id: id, debt: 0 })
             return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": debt, "decision": decision, "newHistory": newHistory, "newEffectiveDate": newEffectiveDate })
         }
-        const reason = "Nothing to add beacause months to add are less then targeted tier duration.";
-        return res.status(200).json({ "total": totalMonths, "to add": Math.ceil(Number(monthsToAdd)), "tier": targetedDuration, "debt": debt, "decision": decision, "reason": reason })
+
 
     } catch (error) {
         handleError(() => console.log(error));
