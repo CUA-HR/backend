@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { CreateTeacherHistoryDTO, UpdateTeacherHistoryDTO, TeacherHistoryDTO } from '../dtos';
 import { and } from 'drizzle-orm';
 import { Degree } from '../../teacher/teacher.enums';
+import { desc } from 'drizzle-orm';
 
 // CREATE ONE TEACHER History
 export const createTeacherHistory = async (createTeacherHistory: CreateTeacherHistoryDTO): Promise<CreateTeacherHistoryDTO> => {
@@ -38,10 +39,16 @@ export const allTeachersHistories = async (): Promise<TeacherHistoryDTO[]> => {
 export const teacherHistories = async (teacherId: number): Promise<any[]> => {
     return (await db).select().from(teachersHistory).where(eq(teachersHistory.teacherId, teacherId)).execute();
 }
-
 // GET LAST TEACHER HISTORY
 export const teacherLastHistory = async (teacherId: number): Promise<TeacherHistoryDTO | null> => {
-    const result = await (await db).select().from(teachersHistory).where(eq(teachersHistory.teacherId, teacherId)).limit(1).execute();
+    const result = await (await db)
+        .select()
+        .from(teachersHistory)
+        .where(eq(teachersHistory.teacherId, teacherId))
+        .orderBy(desc(teachersHistory.createdAt)) // Sort by createdAt in descending order
+        .limit(1)
+        .execute();
+
     return result.length > 0 ? new TeacherHistoryDTO(
         result[0].id,
         result[0].currentDegree as Degree, // Ensure the type matches Degree

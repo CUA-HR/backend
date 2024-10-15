@@ -27,6 +27,7 @@ export const upgradeTeacherDetails = async (upgradeTeacherInputDTO: UpgradeTeach
     let upgrade = false;
     let upgradeWithDebt = false;
     let monthsToAdd = undefined;
+    let newDebt = undefined;
 
     // step 1: Getting the teacher information
     const {
@@ -36,6 +37,7 @@ export const upgradeTeacherDetails = async (upgradeTeacherInputDTO: UpgradeTeach
     } = await teacher(Number(id));
     // step 1.1: Getting teacher history information
     const {
+        currentDegree,
         nextDegree,
         effectiveDate
     } = await teacherLastHistory(Number(id)) || { currentDegree: 0, nextDegree: 0, effectiveDate: new Date() };
@@ -60,27 +62,38 @@ export const upgradeTeacherDetails = async (upgradeTeacherInputDTO: UpgradeTeach
         if (monthsToAddWithoutDebt < 0) { // with debt, so we should update the new debt    
             monthsToAdd = monthsToAddWithDebt;
             upgradeWithDebt = true;
+            newDebt = Math.max(debt - targetedDuration, 0);
         }
         monthsToAdd = monthsToAddWithoutDebt;
 
         return new UpgradeTeacherResponseDTO(
+            id,
+            totalMonths,
+            targetedDuration,
+            upgrade,
+            upgradeWithDebt,
+            !upgradeWithDebt,
+            effectiveDate,
+            currentDegree as Degree,
+            nextDegree as Degree,
+            highPostion,
+            debt,
+            newDebt,
+        )
+    } else {
+        return new UpgradeTeacherResponseDTO(
+            id,
             totalMonths,
             targetedDuration,
             false,
             upgradeWithDebt,
             !upgradeWithDebt,
+            effectiveDate,
+            currentDegree as Degree,
+            nextDegree as Degree,
+            highPostion,
             debt,
-            effectiveDate
-        )
-    } else {
-        return new UpgradeTeacherResponseDTO(
-            totalMonths,
-            targetedDuration,
-            false,
-            false,
-            false,
-            debt,
-            effectiveDate
+            newDebt,
         )
     }
 
