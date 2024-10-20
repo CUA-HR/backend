@@ -1,7 +1,7 @@
 export class CreateDurationDTO {
-    duration: string;
+    duration: number;
     constructor(
-        duration: string,
+        duration: number,
     ) {
         this.duration = duration;
     }

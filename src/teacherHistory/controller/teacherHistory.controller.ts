@@ -1,7 +1,7 @@
 import express from "express";
 import { handleError } from "../../utils/errors";
 import { CreateTeacherHistoryDTO, UpdateTeacherHistoryDTO } from "../dtos";
-import { allTeachersHistories, createTeacherHistory, deleteTeacherHistory, teacherHistories, teacherHistory, updateTeacherHistory } from "../repository/teacherHistory.repository";
+import { allTeachersHistories, createTeacherHistory, deleteTeacherHistory, teacherHistories, teacherHistory, teacherLastHistory, updateTeacherHistory } from "../repository/teacherHistory.repository";
 
 export const CreateTeacherHistory = async (req: express.Request, res: express.Response): Promise<CreateTeacherHistoryDTO | any> => {
     try {
@@ -58,6 +58,17 @@ export const TeacherHistory = async (req: express.Request, res: express.Response
         return res.status(200).json(resutl)
     } catch (error) {
 
+        handleError(() => console.log(error));
+        return res.sendStatus(400);
+    }
+}
+
+export const TeacherLastHistory = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+        const { id, teacherId } = req.params;
+        const result = await teacherLastHistory(Number(teacherId));
+        return res.status(200).json(result)
+    } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);
     }

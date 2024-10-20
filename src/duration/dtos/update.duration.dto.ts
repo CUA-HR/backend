@@ -1,9 +1,9 @@
 export class UpdateDurationDTO {
     id: number;
-    duration?: string;
+    duration?: number;
     constructor(
         id: number,
-        duration: string,
+        duration: number,
     ) {
         this.id = id;
         this.duration = duration;

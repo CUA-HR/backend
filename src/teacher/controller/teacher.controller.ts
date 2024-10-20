@@ -1,10 +1,15 @@
 import express from "express";
 import xlsx from "xlsx";
 import fs from 'fs';
-import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos";
+import moment from "moment";
+import { CreateTeacherDTO, UpdateTeacherDTO, UpgradeTeacherInputDTO } from "../dtos";
 import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
-import { createTeacherFromRow } from "../utils";
+import { createTeacherFromRow, getTeacherTier, upgradeTeacherDetails } from "../utils";
+import { createTeacherHistory, teacherLastHistory } from "../../teacherHistory/repository/teacherHistory.repository";
+import { Degree, MatrialStatus } from "../teacher.enums";
+import { tier } from "../../tier/repository/tier.repositories";
+import { duration } from "../../duration/repository/duration.repository";
 
 export const CreateTeacher = async (req: express.Request, res: express.Response): Promise<CreateTeacherDTO | any> => {
     try {
@@ -15,6 +20,7 @@ export const CreateTeacher = async (req: express.Request, res: express.Response)
             dob,
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             effectiveDate,
@@ -30,6 +36,7 @@ export const CreateTeacher = async (req: express.Request, res: express.Response)
             new Date(dob), // Ensure dob is a Date object
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             new Date(effectiveDate), // Ensure effectiveDate is a Date object
@@ -78,6 +85,7 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
             dob,
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             effectiveDate,
@@ -94,6 +102,7 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
             new Date(dob), // Ensure dob is a Date object
             matrialStatus,
             age,
+            debt,
             currentDegree,
             nextDegree,
             new Date(effectiveDate), // Ensure effectiveDate is a Date object
@@ -101,8 +110,8 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
             positionId,
             tierId,
         );
-        const resutl = await updateTeacher(updateTeacherDTO);
-        return res.status(200).json(resutl)
+        const result = await updateTeacher(updateTeacherDTO);
+        return res.status(200).json(result)
     } catch (error) {
 
         handleError(() => console.log(error));
@@ -113,32 +122,15 @@ export const UpdateTeacher = async (req: express.Request, res: express.Response)
 export const DeleteTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
     const { id } = req.params;
     try {
-        const resutl = await deleteTeacher(Number(id));
-        return res.status(200).json(resutl)
+        const result = await deleteTeacher(Number(id));
+        return res.status(200).json(result)
     } catch (error) {
 
         handleError(() => console.log(error));
         return res.sendStatus(400);
     }
 }
-enum MatrialStatus {
-    متزوج = 'متزوج',
-    أعزب = 'أعزب',
-}
 
-enum Degree {
-    D0 = "0",
-    D1 = "1",
-    D2 = "2",
-    D3 = "3",
-    D4 = "4",
-    D5 = "5",
-    D6 = "6",
-    D7 = "7",
-    D8 = "8",
-    D9 = "9",
-    D12 = "12",
-}
 
 // import feature
 export const ImportTeachersXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
@@ -163,8 +155,9 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
                 new Date(row[5]) || null,
                 row[6] as MatrialStatus || null,
                 Number(row[7]),
-                `${row[9]}` as Degree,
-                `${row[10]}` as Degree,
+                undefined,
+                row[9] as Degree,
+                row[10] as Degree,
                 new Date(row[11]),
                 Boolean(highPosition),
                 Number(positionId),
@@ -182,6 +175,52 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
         return res.status(200).json({
             msg: `${csvData.length} field(s) was added.`
         });
+    } catch (error) {
+        handleError(() => console.log(error));
+        return res.sendStatus(400);
+    }
+}
+
+
+
+// upgrade teacher 
+export const UpgradeTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+        // step 1: Getting required data from the request body
+        const {
+            id,
+            southernPrivilege, // إمتياز الجنوب
+            professionalExperience, // الخبرة المهنية
+        } = req.body;
+
+        const upgradeTeacherDetailsInput = new UpgradeTeacherInputDTO(Number(id), Number(southernPrivilege), Number(professionalExperience))
+
+        const details = await upgradeTeacherDetails(upgradeTeacherDetailsInput);
+
+        if (details.upgrade) {
+
+            if (details.upgradeWithDebt) {
+                await updateTeacher({ id: id, debt: Number(details.newDebt) });
+            }
+
+            await createTeacherHistory({
+                teacherId: id,
+                effectiveDate: details.newEffectiveDate,
+                highPostion: details.highPosition,
+                currentDegree: details.currentDegree,
+                nextDegree: details.nextDegree
+            })
+            
+
+            const decision = "Upgrade the teacher.";
+            const reason = "Teacher upgraded because all conditions are satisfied.";
+            return res.status(200).json({ ...details, decision, reason })
+        }
+        const decision = "Don't upgrade the teacher, conditions are not satisfied.";
+        const reason = "Nothing to add beacause months to add are less then targeted tier duration.";
+        return res.status(200).json({ ...details, decision, reason })
+
+
     } catch (error) {
         handleError(() => console.log(error));
         return res.sendStatus(400);

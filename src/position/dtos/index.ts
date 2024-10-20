@@ -1,4 +1,4 @@
 import { CreatePositionDTO } from "./create.position.dto";
 import { UpdatePositionDTO } from "./update.position.dto";
-
-export { CreatePositionDTO, UpdatePositionDTO };
+import { positionDTO } from "./position.dto";
+export { CreatePositionDTO, UpdatePositionDTO, positionDTO };

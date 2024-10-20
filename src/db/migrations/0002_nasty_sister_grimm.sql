@@ -1,0 +1,1 @@
+ALTER TABLE `tiers` ADD CONSTRAINT `tiers_name_unique` UNIQUE(`name`);

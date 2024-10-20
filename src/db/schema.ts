@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
-import { bigint, mysqlTable, timestamp, varchar, text, mysqlEnum, int, date, boolean } from "drizzle-orm/mysql-core";
+import { bigint, mysqlTable, timestamp, varchar, text, mysqlEnum, int, date, boolean, float } from "drizzle-orm/mysql-core";
+import { now } from "moment";
 
 
 /// USER SCHEMA
@@ -53,6 +54,7 @@ export const teachers = mysqlTable("teachers", {
     matrialStatus: mysqlEnum('matrialStatus', ['متزوج', 'أعزب']),
     age: int("age"),
     highPostion: boolean("highPostion").notNull().$default(() => false),
+    debt: float("debt").default(0),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
@@ -69,10 +71,12 @@ export const teachersHistory = mysqlTable("teachersHistory", {
     id: bigint("id", { mode: "number", unsigned: true })
         .autoincrement()
         .primaryKey(),
-    currentDegree: mysqlEnum("currentDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
-    nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]).notNull(),
+    currentDegree: mysqlEnum("currentDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).notNull(),
+    nextDegree: mysqlEnum("nextDegree", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).notNull(),
     effectiveDate: date("effectiveDate", { mode: "date" }).notNull(),
     highPostion: boolean("highPostion").notNull(),
+    southernPrivilege: float("southernPrivilege").default(0),
+    professionalExperience: float("professionalExperience").default(0.0),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
@@ -91,7 +95,7 @@ export const tiers = mysqlTable("tiers", {
     id: bigint("id", { mode: "number", unsigned: true })
         .autoincrement()
         .primaryKey(),
-    name: varchar("name", { length: 256 }).notNull(),
+    name: varchar("name", { length: 256 }).notNull().unique(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 
@@ -109,7 +113,7 @@ export const durations = mysqlTable("durations", {
     id: bigint("id", { mode: "number", unsigned: true })
         .autoincrement()
         .primaryKey(),
-    duration: varchar("duration", { length: 256 }).notNull(),
+    duration: float("duration").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
