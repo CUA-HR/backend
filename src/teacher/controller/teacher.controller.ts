@@ -183,14 +183,13 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 // export Teacher
 export const ExportTeachersToXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-        // 1. Retrieve teacher data from the database
+
         const teachers = await allTeachers();
 
         if (!teachers || teachers.length === 0) {
             return res.status(404).send("No teachers found.");
         }
 
-        // 2. Prepare the data as an array of objects
         const teacherData = teachers.map((teacher) => ({
             ID: teacher.id,
             Name: teacher.name,
@@ -203,21 +202,16 @@ export const ExportTeachersToXlsx = async (req: express.Request, res: express.Re
             Tier: teacher.tier || ''
         }));
 
-        // 3. Convert the data to an Excel sheet
         const worksheet = xlsx.utils.json_to_sheet(teacherData);
 
-        // 4. Create a Workbook and add the sheet
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, worksheet, "Teachers");
 
-        // 5. Write the data to a buffer in Excel format
         const excelBuffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-        // 6. Set up the response and specify the content type
         res.setHeader('Content-Disposition', 'attachment; filename="teachers.xlsx"');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-        // 7. Send the file as a response
         res.send(excelBuffer);
     } catch (error) {
         console.error("Error exporting teachers:", error);
