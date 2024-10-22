@@ -6,8 +6,8 @@ export class CreateTeacherDTO {
     matrialStatus: 'متزوج' | 'أعزب';
     age?: number; // Optional, as it might not be provided
     debt?: number;
-    currentDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12';
-    nextDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12';
+    currentDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12';
+    nextDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12';
     effectiveDate: Date;
     highPostion: boolean;
     positionId: number;
@@ -21,8 +21,8 @@ export class CreateTeacherDTO {
         matrialStatus: 'متزوج' | 'أعزب',
         age: number | undefined,
         debt: number | undefined,
-        currentDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12',
-        nextDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '12',
+        currentDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12',
+        nextDegree: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12',
         effectiveDate: Date,
         highPostion: boolean = false, // Default to false if not provided
         positionId: number,
