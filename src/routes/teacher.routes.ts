@@ -1,5 +1,5 @@
 import express from "express";
-import { AllTeachers, CreateTeacher, DeleteTeacher, ImportTeachersXlsx,ExportTeachersToXlsx, Teacher, UpdateTeacher, UpgradeTeacher } from "../teacher/controller/teacher.controller";
+import { AllTeachers, CreateTeacher, DeleteTeacher, ImportTeachersXlsx, ExportTeachersToXlsx, Teacher, UpdateTeacher, UpgradeTeacher } from "../teacher/controller/teacher.controller";
 import { verifyToken } from "../middlewares/auth.middleware";
 
 import multer from "multer";
@@ -32,5 +32,5 @@ export default (router: express.Router) => {
     router.post("/teacher/import/xlsx", upload.single("file"), ImportTeachersXlsx);
 
     // Export
-    router.post("/teacher/export/xlsx", ExportTeachersToXlsx);
+    router.get("/teacher/export/xlsx", ExportTeachersToXlsx);
 }

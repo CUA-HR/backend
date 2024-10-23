@@ -185,7 +185,7 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 // Export teachers
 export const ExportTeachersToXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-
+        console.log("test")
         const teachers = await allTeachers();
 
 
