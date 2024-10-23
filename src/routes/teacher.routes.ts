@@ -29,8 +29,8 @@ export default (router: express.Router) => {
     router.post("/teacher/upgrade", verifyToken, UpgradeTeacher);
 
     // Import
-    router.post("/teacher/import/xlsx", upload.single("file"), ImportTeachersXlsx);
+    router.post("/teacher/import/xlsx", verifyToken, upload.single("file"), ImportTeachersXlsx);
 
     // Export
-    router.get("/teacher/export/xlsx", ExportTeachersToXlsx);
+    router.get("/teacher/export/xlsx", verifyToken, ExportTeachersToXlsx);
 }

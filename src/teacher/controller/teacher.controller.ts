@@ -185,9 +185,7 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 // Export teachers
 export const ExportTeachersToXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-        console.log("test")
         const teachers = await allTeachers();
-
 
         if (!teachers || teachers.length === 0) {
             return res.status(404).send("No teachers found.");
@@ -203,8 +201,8 @@ export const ExportTeachersToXlsx = async (req: express.Request, res: express.Re
 
         const excelBuffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-
-        res.setHeader('Content-Disposition', 'attachment; filename="teachers.xlsx"');
+        const filename = `teachers-${new Date()}.xlsx`
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
 
