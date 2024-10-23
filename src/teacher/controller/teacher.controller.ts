@@ -201,7 +201,9 @@ export const ExportTeachersToXlsx = async (req: express.Request, res: express.Re
 
         const excelBuffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-        const filename = `teachers-${new Date()}.xlsx`.toString();
+        const day = moment().date().toString()
+        const month = moment().month().toString();
+        const filename = `teachers-${day}-${month}.xlsx`;
         res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
