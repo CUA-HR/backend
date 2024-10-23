@@ -1,7 +1,7 @@
 import { db } from '../../db/setup';
-import { teachers } from '../../db/schema';
+import { positions, teachers, tiers } from '../../db/schema';
 import { eq } from 'drizzle-orm';
-import { CreateTeacherDTO, TeacherDTO, UpdateTeacherDTO } from '../dtos';
+import { CreateTeacherDTO, TeacherDTO, TeacherExportDTO, UpdateTeacherDTO } from '../dtos';
 import { createTeacherHistory } from '../../teacherHistory/repository/teacherHistory.repository';
 import { CreateTeacherHistoryDTO } from '../../teacherHistory/dtos';
 import { MatrialStatus } from '../teacher.enums';
@@ -41,6 +41,29 @@ export const allTeachers = async (): Promise<TeacherDTO[]> => {
         result.updatedAt,
         result.tierId,
         result.positionId,
+    ));
+}
+
+// GET ALL TEACHERS WITH DETAILS (JOINING)
+export const allTeachersWithDetails = async (): Promise<TeacherExportDTO[]> => {
+    const results = await
+        (await db).select()
+            .from(teachers)
+            .leftJoin(tiers, eq(teachers.tierId, tiers.id))
+            .leftJoin(positions, eq(teachers.positionId, positions.id));
+    return results.map((result) => new TeacherExportDTO(
+        result["teachers"].id,
+        result["teachers"].firstname,
+        result["teachers"].lastname,
+        result["teachers"].email,
+        result["teachers"].dob,
+        result["teachers"].matrialStatus as MatrialStatus,
+        result["teachers"].age,
+        result["teachers"].debt,
+        result["teachers"].highPostion,
+        result["teachers"].createdAt,
+        result["positions"].name,
+        result["tiers"].name
     ));
 }
 

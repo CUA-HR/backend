@@ -3,7 +3,7 @@ import xlsx from "xlsx";
 import fs from 'fs';
 import moment from "moment";
 import { CreateTeacherDTO, UpdateTeacherDTO, UpgradeTeacherInputDTO } from "../dtos";
-import { allTeachers, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
+import { allTeachers, allTeachersWithDetails, createTeacher, deleteTeacher, teacher, updateTeacher } from "../repository/teacher.repositories";
 import { handleError } from "../../utils/errors";
 import { createTeacherFromRow, getTeacherTier, upgradeTeacherDetails } from "../utils";
 import { createTeacherHistory, teacherLastHistory } from "../../teacherHistory/repository/teacherHistory.repository";
@@ -185,7 +185,7 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 // Export teachers
 export const ExportTeachersToXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
     try {
-        const teachers = await allTeachers();
+        const teachers = await allTeachersWithDetails();
 
         if (!teachers || teachers.length === 0) {
             return res.status(404).send("No teachers found.");
