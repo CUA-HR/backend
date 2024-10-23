@@ -182,6 +182,40 @@ export const ImportTeachersXlsx = async (req: express.Request, res: express.Resp
 }
 
 
+// Export teachers
+export const ExportTeachersToXlsx = async (req: express.Request, res: express.Response): Promise<any> => {
+    try {
+       
+        const teachers = await allTeachers();
+
+       
+        if (!teachers || teachers.length === 0) {
+            return res.status(404).send("No teachers found.");
+        }
+   
+       
+        const worksheet = xlsx.utils.json_to_sheet(teachers);
+
+       
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, "Teachers");
+
+        
+        const excelBuffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+         
+        res.setHeader('Content-Disposition', 'attachment; filename="teachers.xlsx"');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        
+        res.send(excelBuffer);
+    } catch (error) {
+         
+        console.error("Error exporting teachers:", error); 
+        res.status(500).send("Error exporting teachers.");
+    }
+}
+
 
 // upgrade teacher 
 export const UpgradeTeacher = async (req: express.Request, res: express.Response): Promise<any> => {
